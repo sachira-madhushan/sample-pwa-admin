@@ -59,7 +59,7 @@ export default function UsersPanel() {
                                 <td className="px-4 py-2 border-b">{user.email}</td>
                                 <td className="px-4 py-2 border-b">{user.created_at}</td>
                                 {
-                                    user.status === "Active" ? (
+                                    user.status === 1 ? (
                                         <td className="px-4 py-2 border-b ">
                                             <button className='rounded bg-green-500 text-white px-4 py-1' onClick={() => handleActiveInactive(user.id)}>{user.status==1?"Active":"Inactive"}</button>
                                         </td>
