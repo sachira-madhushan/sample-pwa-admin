@@ -23,17 +23,31 @@ export default function UsersPanel() {
 
     }
 
-    const handleActiveInactive = (id) => {
+    const handleActiveInactive = async(id) => {
         const targetUser = users.find((user) => user.id === id);
         const newStatus = targetUser.status === 1 ? 0 : 1;
 
-        setUsers((prevUsers) =>
-            prevUsers.map((user) =>
-                user.id === id ? { ...user, status: newStatus } : user
-            )
-        );
+        try {
+            const response = await axios.post("http://localhost:4000/api/v1/admin/users",{
+                userId:id,
+                isActive:newStatus
+            },{
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Accept": "application/json",
+                },
+            });
 
-        alert(`User with ID ${id} has been ${newStatus.toLowerCase()}.`);
+            if(response.status==200){
+                fetchUsers();
+                alert(`Status of user with ID ${id} has been updated.`);
+            }
+            
+        } catch (error) {
+            alert(`Error while changing the status of user with ID ${id}`);
+        }
+
+        
     };
 
     return (
