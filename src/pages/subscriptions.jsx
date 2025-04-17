@@ -1,16 +1,79 @@
-import React from 'react'
-
+import React, { useEffect, useState } from 'react'
+import axios from 'axios';
+import Modal from './add_subscription';
 export default function SubscriptionsPanel() {
-    const subscriptions = [
-        { id: 1, username: "John Doe", email: "john@example.com", package: "Trial", start_date: "2023-01-01", end_date: "2023-02-01", status: "Active" },
-        { id: 2, username: "Jane Smith", email: "jane@example.com", package: "Monthly", start_date: "2023-02-01", end_date: "2023-03-01", status: "Expired" },
-    ];
+
+    const [subscriptions, setSubscriptions] = useState([]);
+    const [showModal, setShowModal] = useState(false);
+    const [packages, setPackages] = useState([]);
+    const [users, setUsers] = useState([]);
+    const [selectedUser, setSelectedUser] = useState(0);
+    const [selectedPackage, setSelectedPackage] = useState(0);
+
+
+    useEffect(() => {
+        fetchSubscriptions();
+        fetchUsers();
+        fetchPackages();
+    })
+
+    const fetchSubscriptions = async () => {
+        try {
+            const response = await axios.get("http://localhost:4000/api/v1/subscription");
+            setSubscriptions(response.data);
+        } catch (error) {
+            console.error("Error fetching users:", error);
+        }
+
+    }
+
+
+    const fetchUsers = async () => {
+        try {
+            const response = await axios.get("http://localhost:4000/api/v1/admin/users",);
+            setUsers(response.data);
+        } catch (error) {
+            console.log("Error fetching users:", error);
+        }
+
+    }
+
+    const fetchPackages = async () => {
+        try {
+            const response = await axios.get("http://localhost:4000/api/v1/subscription/packages",);
+            setPackages(response.data);
+        } catch (error) {
+            console.log("Error fetching packages:", error);
+        }
+    }
+
+    const addPackage = async () => {
+        try {
+            const response = await axios.post("http://localhost:4000/api/v1/subscription", {
+                userId: selectedUser,
+                packageId: selectedPackage
+            },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        "Accept": "application/json",
+                    },
+                }
+            );
+            if(response.status==200){
+                alert("New package added");
+            }
+        } catch (error) {
+            console.log("Error fetching packages:", error);
+        }
+    }
+
     const handleBanUser = (id) => {
         alert(`User with ID ${id} has been banned.`);
     };
 
     const handleAddSubscription = () => {
-        alert("Add new subscription functionality.");
+        setShowModal(true);
     };
 
     return (
@@ -32,6 +95,7 @@ export default function SubscriptionsPanel() {
                             <th className="px-4 py-2 border-b">Package</th>
                             <th className="px-4 py-2 border-b">Start Date</th>
                             <th className="px-4 py-2 border-b">End Date</th>
+                            <th className="px-4 py-2 border-b">Time Remaining (Minutes)</th>
                             <th className="px-4 py-2 border-b">Status</th>
                         </tr>
                     </thead>
@@ -39,16 +103,17 @@ export default function SubscriptionsPanel() {
                         {subscriptions.map((sub) => (
                             <tr key={sub.id} className="hover:bg-gray-50">
                                 <td className="px-4 py-2 border-b">{sub.id}</td>
-                                <td className="px-4 py-2 border-b">{sub.username}</td>
-                                <td className="px-4 py-2 border-b">{sub.email}</td>
-                                <td className="px-4 py-2 border-b">{sub.package}</td>
+                                <td className="px-4 py-2 border-b">{sub.user_name}</td>
+                                <td className="px-4 py-2 border-b">{sub.user_email}</td>
+                                <td className="px-4 py-2 border-b">{sub.package_name}</td>
                                 <td className="px-4 py-2 border-b">{sub.start_date}</td>
                                 <td className="px-4 py-2 border-b">{sub.end_date}</td>
+                                <td className="px-4 py-2 border-b">{sub.remaining_minutes}</td>
                                 {
-                                    sub.status === "Active" ? (
-                                        <td className="px-4 py-2 border-b text-green-600">{sub.status}</td>
+                                    sub.status === 1 ? (
+                                        <td className="px-4 py-2 border-b text-green-600">{sub.status == 1 ? "Active" : "Expired"}</td>
                                     ) : (
-                                        <td className="px-4 py-2 border-b text-red-600">{sub.status}</td>
+                                        <td className="px-4 py-2 border-b text-red-600">{sub.status == 1 ? "Active" : "Expired"}</td>
                                     )
 
                                 }
@@ -56,6 +121,41 @@ export default function SubscriptionsPanel() {
                         ))}
                     </tbody>
                 </table>
+                <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+                    <h2 className="text-lg font-semibold mb-4">Add New Subscription</h2>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Select User</label>
+                        <select
+                            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                            onChange={(e) => setSelectedUser(e.target.value)}
+                        >
+                            <option value="">-- Select User --</option>
+                            {users.map((user) => (
+                                <option key={user.id} value={user.id}>
+                                    {user.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="mt-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Select Package</label>
+                        <select
+                            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                            onChange={(e) => setSelectedPackage(e.target.value)}
+                        >
+                            <option value="">-- Select Package --</option>
+                            {packages.map((pkg) => (
+                                <option key={pkg.id} value={pkg.id}>
+                                    {pkg.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <button className="bg-green-600 text-white px-4 py-2 rounded mt-4 hover:bg-blue-700" onClick={addPackage}>
+                        Activate
+                    </button>
+                </Modal>
+
             </div>
         </div>
 
