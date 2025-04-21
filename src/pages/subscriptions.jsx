@@ -61,7 +61,7 @@ export default function SubscriptionsPanel() {
                     },
                 }
             );
-            if(response.status==200){
+            if (response.status == 200) {
                 alert("New package added");
             }
         } catch (error) {
@@ -69,21 +69,22 @@ export default function SubscriptionsPanel() {
         }
     }
 
+    setTimeout(() => {
+
+    }, 60000);
+
     function formatDuration(minutes) {
         const duration = moment.duration(minutes, 'minutes');
-      
+
         const years = Math.floor(duration.asYears());
         const months = Math.floor(duration.asMonths() % 12);
         const days = Math.floor(duration.asDays() % 30);
         const hours = Math.floor(duration.asHours() % 24);
         const mins = Math.floor(duration.asMinutes() % 60);
-      
-        return `${years}y ${months}mo ${days}d ${hours}h ${mins}m`;
-      }
 
-    const handleBanUser = (id) => {
-        alert(`User with ID ${id} has been banned.`);
-    };
+        return `${years}y ${months}mo ${days}d ${hours}h ${mins}m`;
+    }
+
 
     const handleAddSubscription = () => {
         setShowModal(true);
