@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 import Modal from './add_subscription';
+import moment from 'moment-timezone';
 export default function SubscriptionsPanel() {
 
     const [subscriptions, setSubscriptions] = useState([]);
@@ -68,6 +69,18 @@ export default function SubscriptionsPanel() {
         }
     }
 
+    function formatDuration(minutes) {
+        const duration = moment.duration(minutes, 'minutes');
+      
+        const years = Math.floor(duration.asYears());
+        const months = Math.floor(duration.asMonths() % 12);
+        const days = Math.floor(duration.asDays() % 30);
+        const hours = Math.floor(duration.asHours() % 24);
+        const mins = Math.floor(duration.asMinutes() % 60);
+      
+        return `${years}y ${months}mo ${days}d ${hours}h ${mins}m`;
+      }
+
     const handleBanUser = (id) => {
         alert(`User with ID ${id} has been banned.`);
     };
@@ -95,7 +108,7 @@ export default function SubscriptionsPanel() {
                             <th className="px-4 py-2 border-b">Package</th>
                             <th className="px-4 py-2 border-b">Start Date</th>
                             <th className="px-4 py-2 border-b">End Date</th>
-                            <th className="px-4 py-2 border-b">Time Remaining (Minutes)</th>
+                            <th className="px-4 py-2 border-b">Time Remaining</th>
                             <th className="px-4 py-2 border-b">Status</th>
                         </tr>
                     </thead>
@@ -108,7 +121,7 @@ export default function SubscriptionsPanel() {
                                 <td className="px-4 py-2 border-b">{sub.package_name}</td>
                                 <td className="px-4 py-2 border-b">{sub.start_date}</td>
                                 <td className="px-4 py-2 border-b">{sub.end_date}</td>
-                                <td className="px-4 py-2 border-b">{sub.remaining_minutes}</td>
+                                <td className="px-4 py-2 border-b">{formatDuration(sub.remaining_minutes)}</td>
                                 {
                                     sub.status === 1 ? (
                                         <td className="px-4 py-2 border-b text-green-600">{sub.status == 1 ? "Active" : "Expired"}</td>
