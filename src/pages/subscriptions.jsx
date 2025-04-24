@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 import Modal from './add_subscription';
 import moment from 'moment-timezone';
+import config from '../config/config';
 export default function SubscriptionsPanel() {
 
     const [subscriptions, setSubscriptions] = useState([]);
@@ -16,11 +17,11 @@ export default function SubscriptionsPanel() {
         fetchSubscriptions();
         fetchUsers();
         fetchPackages();
-    })
+    },[])
 
     const fetchSubscriptions = async () => {
         try {
-            const response = await axios.get("http://localhost:4000/api/v1/subscription");
+            const response = await axios.get(config.URL+"/api/v1/subscription");
             setSubscriptions(response.data);
         } catch (error) {
             console.error("Error fetching users:", error);
@@ -31,7 +32,7 @@ export default function SubscriptionsPanel() {
 
     const fetchUsers = async () => {
         try {
-            const response = await axios.get("http://localhost:4000/api/v1/admin/users",);
+            const response = await axios.get(config.URL+"/api/v1/admin/users",);
             setUsers(response.data);
         } catch (error) {
             console.log("Error fetching users:", error);
@@ -41,7 +42,7 @@ export default function SubscriptionsPanel() {
 
     const fetchPackages = async () => {
         try {
-            const response = await axios.get("http://localhost:4000/api/v1/subscription/packages",);
+            const response = await axios.get(config.URL+"/api/v1/subscription/packages",);
             setPackages(response.data);
         } catch (error) {
             console.log("Error fetching packages:", error);
@@ -50,7 +51,7 @@ export default function SubscriptionsPanel() {
 
     const addPackage = async () => {
         try {
-            const response = await axios.post("http://localhost:4000/api/v1/subscription", {
+            const response = await axios.post(config.URL+"/api/v1/subscription", {
                 userId: selectedUser,
                 packageId: selectedPackage
             },
@@ -68,10 +69,6 @@ export default function SubscriptionsPanel() {
             console.log("Error fetching packages:", error);
         }
     }
-
-    setTimeout(() => {
-
-    }, 60000);
 
     function formatDuration(minutes) {
         const duration = moment.duration(minutes, 'minutes');

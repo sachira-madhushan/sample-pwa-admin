@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios';
+import config from '../config/config';
 export default function UsersPanel() {
 
     const [users, setUsers] = useState([]);
@@ -11,11 +12,11 @@ export default function UsersPanel() {
 
     useEffect(() => {
         fetchUsers();
-    })
+    },[])
 
     const fetchUsers = async () => {
         try {
-            const response = await axios.get("http://localhost:4000/api/v1/admin/users");
+            const response = await axios.get(config.URL+"/api/v1/admin/users");
             setUsers(response.data);
         } catch (error) {
             console.error("Error fetching users:", error);
@@ -28,7 +29,7 @@ export default function UsersPanel() {
         const newStatus = targetUser.status === 1 ? 0 : 1;
 
         try {
-            const response = await axios.post("http://localhost:4000/api/v1/admin/users",{
+            const response = await axios.post(config.URL+"/api/v1/admin/users",{
                 userId:id,
                 isActive:newStatus
             },{
