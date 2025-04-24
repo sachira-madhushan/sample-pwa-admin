@@ -11,25 +11,17 @@ export default function SubscriptionsPanel() {
     const [users, setUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState(0);
     const [selectedPackage, setSelectedPackage] = useState(0);
-    const [tick, setTick] = useState(0);
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setTick((prev) => prev + 1);
-        }, 1000);
-
-        return () => clearInterval(interval);
-    }, []);
 
     useEffect(() => {
         fetchSubscriptions();
         fetchUsers();
         fetchPackages();
-    }, [])
+    },[])
 
     const fetchSubscriptions = async () => {
         try {
-            const response = await axios.get(config.URL + "/api/v1/subscription");
+            const response = await axios.get(config.URL+"/api/v1/subscription");
             setSubscriptions(response.data);
         } catch (error) {
             console.error("Error fetching users:", error);
@@ -40,7 +32,7 @@ export default function SubscriptionsPanel() {
 
     const fetchUsers = async () => {
         try {
-            const response = await axios.get(config.URL + "/api/v1/admin/users",);
+            const response = await axios.get(config.URL+"/api/v1/admin/users",);
             setUsers(response.data);
         } catch (error) {
             console.log("Error fetching users:", error);
@@ -50,7 +42,7 @@ export default function SubscriptionsPanel() {
 
     const fetchPackages = async () => {
         try {
-            const response = await axios.get(config.URL + "/api/v1/subscription/packages",);
+            const response = await axios.get(config.URL+"/api/v1/subscription/packages",);
             setPackages(response.data);
         } catch (error) {
             console.log("Error fetching packages:", error);
@@ -59,7 +51,7 @@ export default function SubscriptionsPanel() {
 
     const addPackage = async () => {
         try {
-            const response = await axios.post(config.URL + "/api/v1/subscription", {
+            const response = await axios.post(config.URL+"/api/v1/subscription", {
                 userId: selectedUser,
                 packageId: selectedPackage
             },
@@ -78,30 +70,16 @@ export default function SubscriptionsPanel() {
         }
     }
 
-    function formatDuration(expireDate) {
-        const now = moment.tz("Asia/Colombo").format("YYYY-MM-DD HH:mm:ss");
-        const expire_date = moment.tz(expireDate, "YYYY-MM-DD HH:mm:ss", "Asia/Colombo");
+    function formatDuration(minutes) {
+        const duration = moment.duration(minutes, 'minutes');
 
-        const diffInMinutes = expire_date.diff(now, 'minutes');
+        const years = Math.floor(duration.asYears());
+        const months = Math.floor(duration.asMonths() % 12);
+        const days = Math.floor(duration.asDays() % 30);
+        const hours = Math.floor(duration.asHours() % 24);
+        const mins = Math.floor(duration.asMinutes() % 60);
 
-        const duration = moment.duration(diffInMinutes, 'minutes');
-
-        if (duration <= 0) {
-            const years = 0;
-            const months = 0;
-            const days = 0;
-            const hours = 0;
-            const mins = 0;
-            return `${years}y ${months}mo ${days}d ${hours}h ${mins}m`;
-        } else {
-            const years = Math.floor(duration.asYears());
-            const months = Math.floor(duration.asMonths() % 12);
-            const days = Math.floor(duration.asDays() % 30);
-            const hours = Math.floor(duration.asHours() % 24);
-            const mins = Math.floor(duration.asMinutes() % 60);
-            return `${years}y ${months}mo ${days}d ${hours}h ${mins}m`;
-        }
-        
+        return `${years}y ${months}mo ${days}d ${hours}h ${mins}m`;
     }
 
 
@@ -141,7 +119,7 @@ export default function SubscriptionsPanel() {
                                 <td className="px-4 py-2 border-b">{sub.package_name}</td>
                                 <td className="px-4 py-2 border-b">{sub.start_date}</td>
                                 <td className="px-4 py-2 border-b">{sub.end_date}</td>
-                                <td className="px-4 py-2 border-b">{formatDuration(sub.end_date)}</td>
+                                <td className="px-4 py-2 border-b">{formatDuration(sub.remaining_minutes)}</td>
                                 {
                                     sub.status === 1 ? (
                                         <td className="px-4 py-2 border-b text-green-600">{sub.status == 1 ? "Active" : "Expired"}</td>
