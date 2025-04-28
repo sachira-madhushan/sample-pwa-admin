@@ -11,17 +11,27 @@ export default function SubscriptionsPanel() {
     const [users, setUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState(0);
     const [selectedPackage, setSelectedPackage] = useState(0);
+    const [selectedAccountType,setActiveAccountType]=useState(0);
 
+    const [accountTypes,setAccountTypes]=useState([
+        {
+            name:"Online",
+            id:1
+        },{
+            name:"Offline",
+            id:0
+        }
+    ]);
 
     useEffect(() => {
         fetchSubscriptions();
         fetchUsers();
         fetchPackages();
-    },[])
+    }, [])
 
     const fetchSubscriptions = async () => {
         try {
-            const response = await axios.get(config.URL+"/api/v1/subscription");
+            const response = await axios.get(config.URL + "/api/v1/subscription");
             setSubscriptions(response.data);
         } catch (error) {
             console.error("Error fetching users:", error);
@@ -32,7 +42,7 @@ export default function SubscriptionsPanel() {
 
     const fetchUsers = async () => {
         try {
-            const response = await axios.get(config.URL+"/api/v1/admin/users",);
+            const response = await axios.get(config.URL + "/api/v1/admin/users",);
             setUsers(response.data);
         } catch (error) {
             console.log("Error fetching users:", error);
@@ -42,7 +52,7 @@ export default function SubscriptionsPanel() {
 
     const fetchPackages = async () => {
         try {
-            const response = await axios.get(config.URL+"/api/v1/subscription/packages",);
+            const response = await axios.get(config.URL + "/api/v1/subscription/packages",);
             setPackages(response.data);
         } catch (error) {
             console.log("Error fetching packages:", error);
@@ -51,9 +61,10 @@ export default function SubscriptionsPanel() {
 
     const addPackage = async () => {
         try {
-            const response = await axios.post(config.URL+"/api/v1/subscription", {
+            const response = await axios.post(config.URL + "/api/v1/subscription", {
                 userId: selectedUser,
-                packageId: selectedPackage
+                packageId: selectedPackage,
+                accountType:selectedAccountType
             },
                 {
                     headers: {
@@ -158,6 +169,20 @@ export default function SubscriptionsPanel() {
                             {packages.map((pkg) => (
                                 <option key={pkg.id} value={pkg.id}>
                                     {pkg.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="mt-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Select Type</label>
+                        <select
+                            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                            onChange={(e) => setActiveAccountType(e.target.value)}
+                        >
+                            <option value="">-- Select Type --</option>
+                            {accountTypes.map((accounts) => (
+                                <option key={accounts.id} value={accounts.id}>
+                                    {accounts.name}
                                 </option>
                             ))}
                         </select>
