@@ -115,6 +115,7 @@ export default function SubscriptionsPanel() {
                             <th className="px-4 py-2 border-b">Username</th>
                             <th className="px-4 py-2 border-b">Email</th>
                             <th className="px-4 py-2 border-b">Package</th>
+                            <th className="px-4 py-2 border-b">Package Type</th>
                             <th className="px-4 py-2 border-b">Start Date</th>
                             <th className="px-4 py-2 border-b">End Date</th>
                             <th className="px-4 py-2 border-b">Time Remaining</th>
@@ -128,6 +129,7 @@ export default function SubscriptionsPanel() {
                                 <td className="px-4 py-2 border-b">{sub.user_name}</td>
                                 <td className="px-4 py-2 border-b">{sub.user_email}</td>
                                 <td className="px-4 py-2 border-b">{sub.package_name}</td>
+                                <td className="px-4 py-2 border-b">{sub.package_type}</td>
                                 <td className="px-4 py-2 border-b">{sub.start_date}</td>
                                 <td className="px-4 py-2 border-b">{sub.end_date}</td>
                                 <td className="px-4 py-2 border-b">{formatDuration(sub.remaining_minutes)}</td>
